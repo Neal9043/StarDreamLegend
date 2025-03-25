@@ -2,9 +2,6 @@
 using UnityEngine.UI;
 using System.Collections;
 
-/// <summary>
-/// 敵人邏輯
-/// </summary>
 public class Enemy : MonoBehaviour
 {
     [Header("血量設定")]
@@ -18,21 +15,24 @@ public class Enemy : MonoBehaviour
     [Header("血量顯示")]
     [SerializeField] protected Text hpText;
 
+    [Header("音效設定")]
+    [SerializeField] protected AudioClip soundHurt;     // 受傷音效
+    [SerializeField] protected AudioClip soundDead;     // 死亡音效
+    protected AudioSource aud;
+
     protected SpriteRenderer spriteRenderer;
     protected bool isHurt = false;
     protected bool isDead = false;
-
-    // 自動抓取的名稱
     protected string enemyName;
 
     protected virtual void Start()
     {
         hp = hpMax;
+        enemyName = gameObject.name;
 
         if (ani == null) ani = GetComponent<Animator>();
+        aud = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        enemyName = gameObject.name; 
-
         UpdateHpText();
     }
 
@@ -43,6 +43,8 @@ public class Enemy : MonoBehaviour
         hp -= damage;
         UpdateHpText();
         StartCoroutine(HurtFlash());
+
+        if (soundHurt != null) aud.PlayOneShot(soundHurt);
 
         if (hp <= 0) Dead();
 
@@ -55,9 +57,9 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             spriteRenderer.color = Color.red;
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.05f); 
             spriteRenderer.color = Color.white;
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.05f);
         }
         isHurt = false;
     }
@@ -68,8 +70,11 @@ public class Enemy : MonoBehaviour
         isDead = true;
 
         Debug.Log($"<color=#f33>{enemyName} 死亡</color>");
+
         if (ani != null && !string.IsNullOrEmpty(parDead))
             ani.SetTrigger(parDead);
+
+        if (soundDead != null) aud.PlayOneShot(soundDead);
 
         Destroy(gameObject, 0.5f);
     }
