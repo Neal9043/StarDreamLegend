@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour
 
     [Header("動畫參數")]
     [SerializeField] protected Animator ani;
-    [SerializeField] protected string parDead = "死亡"; // 
+    [SerializeField] protected string parDead = "死亡";
 
     [Header("血量顯示")]
     [SerializeField] protected Text hpText;
@@ -21,22 +21,23 @@ public class Enemy : MonoBehaviour
     protected SpriteRenderer spriteRenderer;
     protected bool isHurt = false;
     protected bool isDead = false;
-    
+
+    // 自動抓取的名稱
+    protected string enemyName;
+
     protected virtual void Start()
     {
         hp = hpMax;
 
         if (ani == null) ani = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        enemyName = gameObject.name; 
+
         UpdateHpText();
     }
 
-    /// <summary>
-    /// 接收傷害
-    /// </summary>
     public virtual void Hurt(float damage)
     {
-
         if (isHurt || isDead) return;
 
         hp -= damage;
@@ -45,13 +46,9 @@ public class Enemy : MonoBehaviour
 
         if (hp <= 0) Dead();
 
-        Debug.Log($"<color=#f93>敵人受傷，剩餘血量：{hp}</color>");
-        
+        Debug.Log($"<color=#33f>{enemyName}</color> 受傷，剩餘血量：<color=#f93>{hp}</color>");
     }
 
-    /// <summary>
-    /// 閃爍受傷特效
-    /// </summary>
     protected IEnumerator HurtFlash()
     {
         isHurt = true;
@@ -65,19 +62,16 @@ public class Enemy : MonoBehaviour
         isHurt = false;
     }
 
-    /// <summary>
-    /// 死亡處理
-    /// </summary>
     protected virtual void Dead()
     {
         if (isDead) return;
         isDead = true;
 
-        Debug.Log("<color=#f33>敵人死亡</color>");
+        Debug.Log($"<color=#f33>{enemyName} 死亡</color>");
         if (ani != null && !string.IsNullOrEmpty(parDead))
             ani.SetTrigger(parDead);
 
-        Destroy(gameObject, 0.5f); // 延遲刪除，保留死亡動畫時間
+        Destroy(gameObject, 0.5f);
     }
 
     protected void UpdateHpText()
@@ -86,10 +80,8 @@ public class Enemy : MonoBehaviour
             hpText.text = $"HP: {hp}";
     }
 
-    // 點擊測試
     private void OnMouseDown()
     {
         Hurt(1);
     }
-    
 }

@@ -28,5 +28,7 @@ public class ClickManager : MonoBehaviour
             }
         }
     }
+
+
 }
 
