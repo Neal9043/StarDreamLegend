@@ -96,6 +96,6 @@ public class Enemy : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Hurt(1);
+        Hurt(2);
     }
 }
