@@ -25,6 +25,9 @@ public class Enemy : MonoBehaviour
     protected bool isDead = false;
     protected string enemyName;
 
+    // 敵人數量統計
+    public static int enemyCount = 0;
+
     protected virtual void Start()
     {
         hp = hpMax;
@@ -34,6 +37,9 @@ public class Enemy : MonoBehaviour
         aud = GetComponent<AudioSource>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         UpdateHpText();
+
+        enemyCount++; //  每生成一隻敵人就+1
+        Debug.Log($"<color=#99f>目前敵人總數：{enemyCount}</color>");
     }
 
     public virtual void Hurt(float damage)
@@ -57,7 +63,7 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             spriteRenderer.color = Color.red;
-            yield return new WaitForSeconds(0.05f); 
+            yield return new WaitForSeconds(0.05f);
             spriteRenderer.color = Color.white;
             yield return new WaitForSeconds(0.05f);
         }
@@ -75,6 +81,9 @@ public class Enemy : MonoBehaviour
             ani.SetTrigger(parDead);
 
         if (soundDead != null) aud.PlayOneShot(soundDead);
+
+        enemyCount--; // 死亡時-1
+        Debug.Log($"<color=#999>剩餘敵人數量：{enemyCount}</color>");
 
         Destroy(gameObject, 0.5f);
     }
